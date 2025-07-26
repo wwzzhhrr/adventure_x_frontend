@@ -1,139 +1,176 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, Form, Typography, Space, Card } from '@douyinfe/semi-ui';
+import { IconMail, IconLock } from '@douyinfe/semi-icons';
 import styles from './index.module.css';
 
+
 const Login = ({ onLogin }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // 处理输入框变化
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // 清除对应字段的错误信息
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  // 表单验证
-  const validateForm = () => {
-    const newErrors = {};
+  // 处理表单提交
+  const handleSubmit = async (values) => {
+    // Semi UI Form组件的onSubmit回调不需要preventDefault
+    console.log('表单提交数据:', values);
     
-    if (!formData.email.trim()) {
-      newErrors.email = '请输入邮箱';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '请输入有效的邮箱地址';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = '请输入密码';
-    } else if (formData.password.length < 6) {
-      newErrors.password = '密码长度至少6位';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // 处理登录提交
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
+    // 使用Form组件提供的values而不是formData
+    if (!values.email || !values.password) {
+      alert('请填写完整的登录信息');
       return;
     }
     
     setIsLoading(true);
     
     try {
-      // 模拟登录API调用
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 调用后端登录API
+      const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password
+        })
+      });
       
-      // 这里可以调用实际的登录API
-      console.log('登录数据:', formData);
+      const data = await response.json();
       
-      // 调用父组件传入的登录回调
-      if (onLogin) {
-        onLogin(formData);
+      if (response.ok) {
+        // 登录成功，保存token到localStorage
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        console.log('登录成功！');
+        
+        // 调用父组件传入的登录回调
+        if (onLogin) {
+          onLogin({
+            token: data.access_token,
+            user: data.user
+          });
+        }
+        
+        console.log('登录成功:', data);
+        
+        // 延迟跳转，让用户看到成功提示
+        setTimeout(() => {
+          navigate('/homepage');
+        }, 1000);
+      } else {
+        // 登录失败，显示错误信息
+        const errorMsg = data.detail || '登录失败，请检查邮箱和密码';
+        console.error('登录失败:', errorMsg);
+        alert(errorMsg);
       }
-      
-      alert('登录成功！');
     } catch (error) {
-      console.error('登录失败:', error);
-      alert('登录失败，请重试');
+      console.error('登录请求失败:', error);
+      const errorMsg = '网络错误，请稍后重试';
+      console.error('网络错误:', errorMsg);
+      alert(errorMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const { Title, Text } = Typography;
+
   return (
     <div className={styles.loginContainer}>
-      <div className={styles.loginBox}>
-        <h2 className={styles.title}>用户登录</h2>
+      <Card 
+        className={styles.loginCard}
+        bodyStyle={{ padding: '40px' }}
+        bordered={false}
+        shadows='hover'
+      >
+        <Space vertical align='center' spacing='loose' style={{ width: '100%' }}>
+          <Title heading={2} style={{ margin: 0, color: '#1C1F23' }}>
+            欢迎登录
+          </Title>
+          <Text type='tertiary' size='normal'>
+            请输入您的邮箱和密码
+          </Text>
+        </Space>
         
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="email" className={styles.label}>
-              邮箱
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
-              placeholder="请输入邮箱地址"
-              disabled={isLoading}
-            />
-            {errors.email && (
-              <span className={styles.errorText}>{errors.email}</span>
-            )}
-          </div>
-          
-          <div className={styles.inputGroup}>
-            <label htmlFor="password" className={styles.label}>
-              密码
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
-              placeholder="请输入密码"
-              disabled={isLoading}
-            />
-            {errors.password && (
-              <span className={styles.errorText}>{errors.password}</span>
-            )}
-          </div>
-          
-          <button
-            type="submit"
-            className={styles.submitButton}
+        <Form 
+          onSubmit={handleSubmit}
+          onSubmitFail={(errors, values) => {
+            console.log('表单验证失败:', errors, values);
+            alert('请检查输入信息');
+          }}
+          style={{ marginTop: '32px' }}
+          labelPosition='top'
+          labelAlign='left'
+        >
+          <Form.Input
+            field='email'
+            label='邮箱地址'
+            placeholder='请输入邮箱地址'
+            prefix={<IconMail />}
+            type='email'
+            size='large'
             disabled={isLoading}
+            style={{ marginBottom: '20px' }}
+            rules={[
+              { required: true, message: '请输入邮箱地址' },
+              { type: 'email', message: '请输入有效的邮箱地址' }
+            ]}
+          />
+          
+          <Form.Input
+            field='password'
+            label='密码'
+            placeholder='请输入密码'
+            prefix={<IconLock />}
+            type='password'
+            size='large'
+            disabled={isLoading}
+            style={{ marginBottom: '24px' }}
+            rules={[
+              { required: true, message: '请输入密码' },
+              { min: 6, message: '密码长度至少6位' }
+            ]}
+          />
+          
+          <Button
+            htmlType='submit'
+            type='primary'
+            size='large'
+            loading={isLoading}
+            block
+            style={{ 
+              height: '48px',
+              fontSize: '16px',
+              fontWeight: 500
+            }}
           >
             {isLoading ? '登录中...' : '登录'}
-          </button>
-        </form>
+          </Button>
+        </Form>
         
         <div className={styles.footer}>
-          <a href="#" className={styles.link}>忘记密码？</a>
-          <a href="#" className={styles.link}>注册账号</a>
+          <Space>
+            <Button 
+              theme='borderless' 
+              type='tertiary' 
+              size='small'
+              onClick={() => alert('忘记密码功能开发中...')}
+            >
+              忘记密码？
+            </Button>
+            <Text type='tertiary'>|</Text>
+            <Button 
+              theme='borderless' 
+              type='tertiary' 
+              size='small'
+              onClick={() => alert('注册功能开发中...')}
+            >
+              注册账号
+            </Button>
+          </Space>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

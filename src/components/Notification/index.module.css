@@ -1,0 +1,109 @@
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 320px;
+  max-width: 480px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.notification.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.notification.hide {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.notification.success {
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  color: white;
+  border-left: 4px solid #389e0d;
+}
+
+.notification.error {
+  background: linear-gradient(135deg, #ff4d4f, #ff7875);
+  color: white;
+  border-left: 4px solid #cf1322;
+}
+
+.notification.warning {
+  background: linear-gradient(135deg, #faad14, #ffc53d);
+  color: white;
+  border-left: 4px solid #d48806;
+}
+
+.notification.info {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  color: white;
+  border-left: 4px solid #096dd9;
+}
+
+.icon {
+  font-size: 18px;
+  font-weight: bold;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .notification {
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+/* 多个通知的堆叠效果 */
+.notification:nth-child(2) {
+  top: 80px;
+}
+
+.notification:nth-child(3) {
+  top: 140px;
+}
+
+.notification:nth-child(4) {
+  top: 200px;
+}

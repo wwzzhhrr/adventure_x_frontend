@@ -1,0 +1,190 @@
+.container {
+  background: transparent;
+  padding: 0;
+  height: 100%;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: transparent;
+}
+
+/* Header样式 */
+.header {
+  background: white;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.backButton {
+  margin-right: 16px;
+}
+
+.title {
+  margin: 0 !important;
+  flex: 1;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+/* Content样式 */
+.content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.taskCard {
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.taskCard:hover {
+  border-color: #1890ff;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.taskTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.taskTitle h5 {
+  margin: 0 !important;
+  color: #1a1a1a;
+}
+
+.statusTag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff7e6;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #ffd591;
+}
+
+.coinIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.rewardAmount {
+  color: #fa8c16;
+  font-size: 16px;
+}
+
+.taskDescription {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.skillTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.skillTag {
+  background: #f0f0f0;
+  color: #666;
+  border: none;
+  font-size: 12px;
+}
+
+.taskFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.dateInfo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dateIcon {
+  color: #999;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .content {
+    padding: 16px;
+  }
+  
+  .header {
+    padding: 12px 16px;
+  }
+  
+  .taskHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .taskTitle {
+    width: 100%;
+  }
+  
+  .reward {
+    align-self: flex-start;
+  }
+  
+  .taskFooter {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
